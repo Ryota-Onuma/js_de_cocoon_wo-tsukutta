@@ -1,0 +1,15 @@
+<%= form_with(model: @project, local: true) do |s| %>
+    <%= s.label :p_name %>
+    <%= s.text_field :p_name %>
+    <div class="project">
+        <%= s.fields_for :task do |t| %>
+            <%= render "task_fields", f: t %>
+        <% end %>
+        <div class="links">
+            <%= link_to_add_association "子供を追加", s, :task %>
+        </div>
+    </div>
+    <div class="actions">
+        <%= s.submit %>
+    </div>
+<% end %>
