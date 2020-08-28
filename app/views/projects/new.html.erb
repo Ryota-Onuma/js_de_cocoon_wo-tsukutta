@@ -1,15 +1,179 @@
-<%= form_with(model: @project, local: true) do |s| %>
-    <%= s.label :p_name %>
-    <%= s.text_field :p_name %>
-    <div class="project">
-        <%= s.fields_for :task do |t| %>
-            <%= render "task_fields", f: t %>
-        <% end %>
-        <div class="links">
-            <%= link_to_add_association "子供を追加", s, :task %>
+
+
+<section id='projects-new'>
+    <div id='project-form'>
+        <input type='text' name='name' placeholder = 'プロジェクト名を入力' id="project-name-form" />
+        <textarea  id='project-description-form' placeholder = 'プロジェクトの説明を入力'></textarea>
+    </div>
+    <div id='task-forms'>
+        <div id='task-form-container'></div>
+        <div id='task-add-button-container'>
+            <button type='button' onclick='addTaskForm()'>Taskを追加</button>
         </div>
     </div>
-    <div class="actions">
-        <%= s.submit %>
-    </div>
-<% end %>
+
+    <button type='submit' onclick='sendFormData()'>送信</button>
+</section>
+
+
+
+<script>
+// フォームの生成関係のJS開始
+let existsTaskCount = 0
+const TaskFormContainer = document.getElementById('task-form-container')
+const addTaskForm = () => {
+    existsTaskCount++ 
+    const taskForm = document.createElement('div')
+    const taskNameForm = createTaskNameForm()
+    const taskDescriptionForm = createTaskDescriptionForm()
+    const ItemAddButton = createItemAddButtons()
+    const ItemField = createItemField()
+
+    const div =  document.createElement('div')
+    div.classList.add('task')
+    div.append(taskNameForm)
+    div.append(taskDescriptionForm)
+    taskForm.append(div)
+    taskForm.append(ItemField)
+    taskForm.append(ItemAddButton)
+    TaskFormContainer.append(taskForm)
+};
+const createTaskNameForm = () => {
+    const taskNameForm = document.createElement('input')
+    taskNameForm.type='text'
+    taskNameForm.id = 'task-name-form-' +  existsTaskCount
+    taskNameForm.classList.add('task-name-form')
+    taskNameForm.placeholder = 'タスク名を入力'
+    return taskNameForm 
+};
+const createTaskDescriptionForm = () => {
+    const taskDescriptionForm = document.createElement('textarea')
+    taskDescriptionForm.id = 'task-description-form-' +  existsTaskCount
+    taskDescriptionForm.classList.add('task-description-form')
+    taskDescriptionForm.placeholder = 'タスク名を入力'
+    return taskDescriptionForm
+};
+const createItemAddButtons = () => {
+    const ItemAddButton = document.createElement('button')
+    ItemAddButton.id = 'item-add-button' +  existsTaskCount
+    ItemAddButton.classList.add('item-add-button')
+    ItemAddButton.textContent = 'Todoを追加'
+    ItemAddButton.onclick = () => {
+        createItem(ItemAddButton.id.slice(-1)) 
+    }
+    const ItemAddButtonContainer = document.createElement('div')
+    ItemAddButtonContainer.classList.add('item-add-button-container')
+    ItemAddButtonContainer.append(ItemAddButton)
+    return ItemAddButtonContainer
+};
+const createItemField = () => {
+    const ItemField = document.createElement('div')
+    ItemField.id = 'item-field' +  existsTaskCount
+    ItemField.classList.add('item-field')
+    return ItemField
+};
+const createItem = (id) => {
+    const ItemField = document.getElementById('item-field' + id)
+    const ItemForm = createItemForm()
+    const ItemDescriptionForm = createItemDescriptionForm()
+    const div = document.createElement('div')
+    div.classList.add('todo')
+    div.append(ItemForm)
+    div.append(ItemDescriptionForm)
+    ItemField.append(div)
+};
+
+const createItemForm = () => {
+    const taskItemForm = document.createElement('input')
+    taskItemForm.type='text'
+    taskItemForm.classList.add('item-form')
+    taskItemForm.placeholder = 'Todo名を入力'
+    return taskItemForm
+};
+const createItemDescriptionForm = () => {
+    const ItemDescriptionForm = document.createElement('textarea')
+    ItemDescriptionForm.classList.add('item-description-form')
+    ItemDescriptionForm.placeholder = 'Todoの内容を入力'
+    return ItemDescriptionForm
+};
+// フォームの生成関係のJS終わり
+// 送信関係
+const sendFormData = () =>{
+    const projectNames = document.getElementById("project-name-form").value //project名
+    const projectDescriptions= document.getElementById("project-description-form").value //project の description
+
+    const project = {
+        "name": projectNames,
+        "description": projectDescriptions,
+    }
+
+    const tasks =  document.querySelectorAll(".task")
+    const itemFields =  document.querySelectorAll(".todo")
+  
+    const task_array = []
+    for (let i = 0; i < tasks.length;i++){
+        
+        const task = {
+            task_id: Number(tasks[i].nextSibling.id.slice(-1)),
+            name:tasks[i].childNodes[0].value,
+            description:tasks[i].childNodes[1].value,
+        }
+        task_array.push(task)
+    }
+
+
+    const todo_array= []
+    for (let i = 0; i < itemFields.length;i++){
+       if (itemFields[i].childNodes){
+        const task_id = Number(itemFields[i].parentNode.id.slice(-1))
+        todo = {
+            name:itemFields[i].childNodes[0].value,
+            description:itemFields[i].childNodes[1].value,
+            task_id: task_id 
+        }
+        todo_array.push(todo)
+    }}
+
+    const data = {
+        "project": JSON.stringify(project),
+        "tasks": JSON.stringify(task_array),
+        "todos": JSON.stringify(todo_array)
+    }
+    sendFunc(data)
+
+};
+const getCsrfToken = () => {
+    const metas = document.getElementsByTagName('meta');
+    for (let meta of metas) {
+        if (meta.getAttribute('name') === 'csrf-token') {
+            console.log(meta.getAttribute('content'));
+            return meta.getAttribute('content');
+        }
+    }
+    return '';
+}
+const sendFunc = async (data) => {  
+ const info = {
+     data
+ }
+  try {
+    const url = '/projects';
+    const body = JSON.stringify(info);
+    const response = await fetch(url ,{
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCsrfToken()
+        }, body});
+    const json = await response
+    location.href="/projects"
+  } catch (error) {
+    console.log(error);
+  }
+
+};
+
+
+
+</script>

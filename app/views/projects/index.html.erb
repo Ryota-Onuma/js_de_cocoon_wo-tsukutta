@@ -1,5 +1,25 @@
+
+
+<a href='/projects/new'>投稿する</a>
+<section id='index'>
 <% @projects.each do |project| %>
-  <%= link_to  project_path(project.id) do %>
+  <div class='project'>
     <%= project.name %>
-  <% end %>
+    <% project.tasks.each do |task|%>
+      <div class='task'>
+      <%= task.name %>
+        <% task.items.each do |item|%>
+          <div class='item'>
+            <div>
+              <% if item.task_id  == task.id%>
+                <%= item.name %>
+              <% end %>
+            </div>   
+           
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 <% end %>
+</section>

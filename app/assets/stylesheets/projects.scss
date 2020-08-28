@@ -1,3 +1,101 @@
 // Place all the styles related to the projects controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+#projects-new {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  #project-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    input[type="text"],
+    textarea {
+      display: block;
+      margin: 10px;
+      width: 600px;
+      padding: 5px;
+    }
+  }
+
+  #task-forms {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+
+    #task-form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      border: 1px solid black;
+      div {
+        padding: 10px;
+        input[type="text"],
+        textarea {
+          display: block;
+          margin: 10px;
+          width: 500px;
+          padding: 5px;
+        }
+        .item-field {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 10px;
+          input[type="text"],
+          textarea {
+            display: block;
+            margin: 10px;
+            width: 400px;
+            padding: 5px;
+          }
+        }
+        .item-add-button-container {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+        }
+      }
+    }
+    #task-add-button-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      margin: 20px 0;
+    }
+  }
+}
+
+#index {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  .project {
+    width: 500px;
+    margin: 30px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .task {
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+      }
+    }
+  }
+}
